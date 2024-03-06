@@ -5,11 +5,18 @@ from tg.controllers.util import validation_errors_response
 
 from formencode import validators, Schema
 
+from tgext.formencode import plugme
+
 
 class Pwd(Schema):
     pwd1 = validators.String(not_empty=True)
     pwd2 = validators.String(not_empty=True)
     chained_validators = [validators.FieldsMatch('pwd1', 'pwd2')]
+
+
+class ColonValidator(validators.FancyValidator):
+    def _validate_python(self, value, state):
+        raise validators.Invalid('ERROR: Description', value, state)
 
 
 class RootController(TGController):
@@ -27,6 +34,12 @@ class RootController(TGController):
         else:
             return "Password ok!"
 
+    @expose('json:')
+    @validate(validators={"e": ColonValidator()})
+    def error_with_colon(self, e):
+        errors = tg.request.validation.errors
+        return dict(errors=str(errors))
+
 
 class TestFormencodeValidation:
     def setup_method(self):
@@ -34,6 +47,7 @@ class TestFormencodeValidation:
         configurator.update_blueprint({
             'root_controller': RootController()
         })
+        plugme(configurator)
         self.app = TestApp(configurator.make_wsgi_app())
 
     def test_schema_validation_error(self):
@@ -51,4 +65,8 @@ class TestFormencodeValidation:
 
         resp = self.app.post('/formencode_dict_validation', {'param': "hello"}, status=412)
         assert 'Please enter an integer value' in str(resp.body), resp
+
+    def test_error_with_colon(self):
+        resp = self.app.post('/error_with_colon', {'e':"fakeparam"})
+        assert 'Description' in str(resp.body), resp.body
 

@@ -1,8 +1,9 @@
 from unittest import mock
 
 import tg
-from tg import i18n
 from tg.util.webtest import test_context
+
+from tgext.formencode import i18n
 
 
 def test_formencode_gettext_nulltranslation():
@@ -12,7 +13,7 @@ def test_formencode_gettext_nulltranslation():
         return v
 
     with mock.patch.object(i18n, 'ugettext', new=nop_gettext):
-        assert i18n._formencode_gettext('something') == 'something'
+        assert i18n.formencode_gettext('something') == 'something'
 
 
 def test_formencode_gettext():
@@ -21,4 +22,4 @@ def test_formencode_gettext():
     with test_context(app=None):
         with mock.patch.object(tg.translator, '_formencode_translation', create=True,
                                new=_formencode_translation):
-            assert i18n._formencode_gettext('something') == 'TRANSLATED'
+            assert i18n.formencode_gettext('something') == 'TRANSLATED'

@@ -1,6 +1,6 @@
 from webtest import TestApp
 from tg import TGController, expose, FullStackApplicationConfigurator
-from tgext.formencode import variable_decode
+from tgext.formencode import variable_decode, plugme
 
 
 class RootController(TGController):
@@ -16,6 +16,7 @@ class TestDecorators:
         configurator.update_blueprint({
             'root_controller': RootController()
         })
+        plugme(configurator)
         self.app = TestApp(configurator.make_wsgi_app())
 
     def test_variable_decode(self):
