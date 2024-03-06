@@ -3,7 +3,13 @@ import tg
 from tg import TGController, expose, validate, FullStackApplicationConfigurator
 from tg.controllers.util import validation_errors_response
 
-from formencode import validators
+from formencode import validators, Schema
+
+
+class Pwd(Schema):
+    pwd1 = validators.String(not_empty=True)
+    pwd2 = validators.String(not_empty=True)
+    chained_validators = [validators.FieldsMatch('pwd1', 'pwd2')]
 
 
 class RootController(TGController):
@@ -13,6 +19,14 @@ class RootController(TGController):
     def formencode_dict_validation(self, **kwargs):
         return 'NO_ERROR'
 
+    @expose()
+    @validate(validators=Pwd())
+    def password(self, pwd1, pwd2):
+        if tg.request.validation.errors:
+            return "There was an error"
+        else:
+            return "Password ok!"
+
 
 class TestFormencodeValidation:
     def setup_method(self):
@@ -21,6 +35,15 @@ class TestFormencodeValidation:
             'root_controller': RootController()
         })
         self.app = TestApp(configurator.make_wsgi_app())
+
+    def test_schema_validation_error(self):
+        """Test schema validation"""
+        form_values = {'pwd1': 'me', 'pwd2': 'you'}
+        resp = self.app.post('/password', form_values)
+        assert "There was an error" in resp, resp
+        form_values = {'pwd1': 'you', 'pwd2': 'you'}
+        resp = self.app.post('/password', form_values)
+        assert "Password ok!" in resp, resp
 
     def test_formencode_dict_validation(self):
         resp = self.app.post('/formencode_dict_validation', {'param': "7"})
