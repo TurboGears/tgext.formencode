@@ -1,4 +1,4 @@
-# tgext.tw2
+# tgext.formencode
 Support Formencode validation in TurboGears 2.5+
 
 ## Usage
