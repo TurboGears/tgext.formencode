@@ -1,0 +1,11 @@
+[project]
+name = "tgext.formencode"
+version = "0.1"
+requires-python = ">= 3.7"
+dependencies = [
+  "formencode",
+  "TurboGears2"
+]
+
+[project.optional-dependencies]
+testing = ["pytest", "TurboGears2[testing]"]
