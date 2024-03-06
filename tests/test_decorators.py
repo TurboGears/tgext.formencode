@@ -25,3 +25,19 @@ class TestDecorators:
         params = variable_encode(dict(obj=obj), add_repetitions=False)
         resp = self.app.get('/test_vardec', params=params)
         assert resp.json['obj'] == obj, (resp.json['obj'], obj)
+
+    def test_variabledecode_fail(self):
+        resp = self.app.get('/test_vardec', params={'test-1': '1',
+                                                    'test-2': 2,
+                                                    'test--repetitions': 'hi'})
+        assert resp.json['test-1'] == '1', resp.json
+        assert resp.json['test--repetitions'] == 'hi', resp.json
+        assert 'test' not in resp.json, resp.json
+
+    def test_variabledecode_partial_fail(self):
+        resp = self.app.get('/test_vardec', params={'test-1': '1',
+                                                    'test-2': 2,
+                                                    'test-': 4})
+        assert resp.json['test-1'] == '1'
+        assert resp.json['test-'] == '4'
+        assert len(resp.json['test']) == 2
