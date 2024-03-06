@@ -1,5 +1,5 @@
 # tgext.formencode
-Support Formencode validation in TurboGears 2.5+
+Support Formencode Schema validation in TurboGears 2.5+
 
 ## Usage
 
