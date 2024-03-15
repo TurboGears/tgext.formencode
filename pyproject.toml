@@ -13,8 +13,8 @@ readme = "README.md"
 keywords = ["turbogears2.extension"]
 requires-python = ">= 3.7"
 dependencies = [
-  "TurboGears2 >= 2.5.0"
-  "formencode",
+  "TurboGears2 >= 2.5.0",
+  "formencode"
 ]
 
 
