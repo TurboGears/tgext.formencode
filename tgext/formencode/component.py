@@ -38,8 +38,13 @@ class FormencodeConfigurationComponent(ConfigurationComponent):
             validation_explode[Invalid] = _validation_explode
 
 
-def _set_request_lang(context, languages):
-    set_formencode_translation(languages, context)
+def _set_request_lang(languages):
+    # Retrieve TG local context explicitly; hooks don't pass it.
+    tgl = tg.request_local.context
+    # Ensure languages is a sequence for gettext
+    if isinstance(languages, (str, bytes)):
+        languages = [languages]
+    set_formencode_translation(languages, tgl)
 
 
 def _validate_schema(schema, params):
@@ -51,7 +56,6 @@ def _validate_schema(schema, params):
 
 
 def _validation_explode(exception):
-    print("HERE")
     errors = {}
 
     # Most Invalid objects come back with a list of errors in the format:
@@ -68,5 +72,4 @@ def _validation_explode(exception):
 
         errors[field_value[0]] = field_value[1]
 
-    print("RETURN", errors)
     return {"errors": errors, "values": getattr(exception, 'value', {})}

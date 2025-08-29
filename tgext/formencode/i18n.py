@@ -1,3 +1,4 @@
+import gettext as _gettext
 from gettext import NullTranslations
 import formencode
 import tg
