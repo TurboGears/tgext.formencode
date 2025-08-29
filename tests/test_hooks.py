@@ -39,6 +39,8 @@ def test_set_request_lang_sets_formencode_translation():
             f"Expected GNUTranslations, got {type(trans)}"
         )
 
-        # Sanity check: a well-known message should be translated in pt_BR
-        sample = 'Please enter an integer value'
-        assert trans.gettext(sample) != sample
+        # Compare with a known pt_BR GNUTranslations instance by catalog
+        from tgext.formencode import i18n as fe_i18n
+        expected = gettext.translation('FormEncode', languages=['pt_BR'], localedir=fe_i18n._localdir)
+        assert isinstance(expected, gettext.GNUTranslations)
+        assert trans._catalog == expected._catalog
